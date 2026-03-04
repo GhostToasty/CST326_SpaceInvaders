@@ -1,0 +1,29 @@
+﻿using UnityEngine;
+using UnityEngine.InputSystem;
+
+public class PlayerEx : MonoBehaviour
+{
+    public GameObject bulletPrefab;
+    public Transform shootOffsetTransform;
+
+    void Start()
+    {
+        // todo - get and cache animator
+    }
+    
+    void Update()
+    {
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            GameObject shot = Instantiate(bulletPrefab, shootOffsetTransform.position, Quaternion.identity);
+            Debug.Log("Bang!");
+
+            // todo - destroy the bullet after 3 seconds
+            Destroy(shot, 3f);
+
+            // todo - trigger shoot animation
+            GetComponent<Animator>().SetTrigger("ShotTrigger");
+            
+        }
+    }
+}
