@@ -12,11 +12,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI scoreHighText;
     public GameObject player;
-    // public GameObject gameplayRoot;
     float time;
     int scoreTotal = 0;
     int scoreHigh;
-    // string scoreHighTx;
 
     
     void Start()
@@ -40,24 +38,27 @@ public class GameManager : MonoBehaviour
 
     }
 
+
     void Update()
     {
         if (time <= 3)
             StartScreen();
     }
 
+
     void OnEnemyDied(int points)
     {
         Debug.Log($"Killed enemy, worth: {points}");
-
         scoreTotal += points;
         ScoreFormatter(scoreTotal, scoreText);
     }
+
 
     void OnDestroy()
     {
         Enemy.OnEnemyDied -= OnEnemyDied;
     }
+
 
     void StartScreen()
     {
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
+
     void OnPlayerDied()
     {
         Debug.Log("running");
@@ -76,13 +78,12 @@ public class GameManager : MonoBehaviour
         {
             scoreHigh = scoreTotal;
             PlayerPrefs.SetInt("scoreHighStored", scoreHigh);
-
             ScoreFormatter(PlayerPrefs.GetInt("scoreHighStored"), scoreHighText);
             PlayerPrefs.Save();
         }
 
         Transform playerInstance = Instantiate(player).transform;
-        playerInstance.transform.position = new Vector2(0, -10);
+        playerInstance.transform.position = new Vector2(0, -10.5f);
         playerInstance.transform.parent = gameplay.transform;
         
         startUI.SetActive(true);
@@ -91,12 +92,11 @@ public class GameManager : MonoBehaviour
         time = 0;
         scoreTotal = 0;
         ScoreFormatter(scoreTotal, scoreText);
-    
     }
+
 
     void ScoreFormatter(int points, TextMeshProUGUI field)
     {
-        
         if(points < 10)
             field.text = $"000{points}";
         else if(points < 100)
