@@ -9,9 +9,9 @@ public class Enemy : MonoBehaviour
 
     public delegate void SwitchDirectionFunc(char direction);
     public static event SwitchDirectionFunc OnSwitchDirection;
-
+    
+    public AudioManager audioManager;
     public GameObject bulletEnemyPrefab;
-    // public Transform shootOffsetTransform;
     float time;
     int nextTime = 1;
     int nextShip = 5;
@@ -30,6 +30,7 @@ public class Enemy : MonoBehaviour
                 if (UnityEngine.Random.Range(0, 10) == 0)
                 {
                     GameObject shot = Instantiate(bulletEnemyPrefab, transform.position, Quaternion.identity);
+                    audioManager.EnemyShoot();
                     Destroy(shot, 4f);
                 }
             }
@@ -78,6 +79,7 @@ public class Enemy : MonoBehaviour
 
         // todo - trigger death animation
     }
+
 
     void OnTriggerEnter2D(Collider2D other)
     {   

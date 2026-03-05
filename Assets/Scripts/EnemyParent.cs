@@ -11,13 +11,13 @@ public class EnemyParent : MonoBehaviour
     public float enemiesHit = 0;
     float speedEffect = 0.02f;
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
     void Start()
     {
         Enemy.OnSwitchDirection += OnSwitchDirection;
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         time += Time.deltaTime;
@@ -25,8 +25,8 @@ public class EnemyParent : MonoBehaviour
         if (Convert.ToDouble(time) >= nextTime)
         {
             timeStepAmount = 1 - (speedEffect * enemiesHit);
-            Debug.Log(timeStepAmount);
-            Debug.Log(enemiesHit);
+            // Debug.Log(timeStepAmount);
+            // Debug.Log(enemiesHit);
             nextTime = Convert.ToDouble(time) + timeStepAmount;
             if (moveY != 0)
             {
@@ -37,6 +37,7 @@ public class EnemyParent : MonoBehaviour
                 transform.position = new Vector2(transform.position.x + moveX, transform.position.y);
         }
     }
+
 
     void OnSwitchDirection(char direction)
     {
