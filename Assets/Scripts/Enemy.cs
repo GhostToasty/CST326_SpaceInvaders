@@ -9,15 +9,37 @@ public class Enemy : MonoBehaviour
 
     public delegate void SwitchDirectionFunc(char direction);
     public static event SwitchDirectionFunc OnSwitchDirection;
+    public delegate void LoadCreditsFunc();
+    public static event LoadCreditsFunc OnLoadCredits;
+
     
     public AudioManager audioManager;
     public GameObject bulletEnemyPrefab;
     float time;
-    int nextTime = 1;
+    int nextTime = 2;
     int nextShip = 5;
     int speedShip = 10;
     public EnemyParent enemyParent;
+    Animator _animator;
+    private string animIdleName;
 
+    
+    void Start()
+    {
+        _animator = GetComponent<Animator>();
+        
+        if (gameObject.CompareTag("Ship") == false)
+            EnemyParent.OnChangeFrame += OnChangeFrame;
+
+        if (gameObject.CompareTag("Octopus"))
+            animIdleName = "EnemyOctoIdle";
+        if (gameObject.CompareTag("LilGuy"))
+            animIdleName = "EnemyLilIdle";
+        if (gameObject.CompareTag("Jellyfish"))
+            animIdleName = "EnemyJellyIdle";
+
+        _animator.SetFloat("SpeedMult", 0f);
+    }
     
     void Update()
     {          
@@ -27,10 +49,10 @@ public class Enemy : MonoBehaviour
             if (Convert.ToInt16(time) >= nextTime)
             {
                 nextTime = Convert.ToInt16(time) + 1;
-                if (UnityEngine.Random.Range(0, 10) == 0)
+                if (UnityEngine.Random.Range(0, 10) == 0 && _animator.GetBool("Shoot") == false)
                 {
+                    _animator.SetBool("Shoot", true);
                     GameObject shot = Instantiate(bulletEnemyPrefab, transform.position, Quaternion.identity);
-                    audioManager.EnemyShoot();
                     Destroy(shot, 4f);
                 }
             }
@@ -58,6 +80,9 @@ public class Enemy : MonoBehaviour
     {
         if(collision.gameObject.layer == LayerMask.NameToLayer("Bullet"))
         {
+            EnemyParent.OnChangeFrame -= OnChangeFrame;
+            _animator.SetBool("Died", true);
+
             int points = 0;
             
             if(gameObject.CompareTag("Ship"))
@@ -69,15 +94,12 @@ public class Enemy : MonoBehaviour
             if(gameObject.CompareTag("Jellyfish"))
                 points = 10;   
 
-                   
             Destroy(collision.gameObject);
-            Destroy(gameObject);
             enemyParent.enemiesHit += 1;
 
             OnEnemyDied?.Invoke(points);
         }
 
-        // todo - trigger death animation
     }
 
 
@@ -96,5 +118,32 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    void StopShootAnim()
+    {
+        _animator.SetBool("Shoot", false);
+    }
+
+    void StopExplodeAnim()
+    {
+        Destroy(gameObject);
+        if (enemyParent.enemiesHit == 28)
+            OnLoadCredits?.Invoke();
+    }
+
+
+    void OnChangeFrame(float frameNum)
+    {
+        _animator.Play(animIdleName, 0, frameNum);
+    }
+
+    void StartShootSound()
+    {
+        audioManager.EnemyShootSound();
+    }
+
+    void StartExplodeSound()
+    {
+        audioManager.EnemyExplodeSound();
+    }
 
 }

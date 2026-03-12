@@ -12,16 +12,16 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI scoreHighText;
     public GameObject player;
-    float time;
+    // float time;
     int scoreTotal = 0;
     int scoreHigh;
 
     
     void Start()
     {
-        gameplay.SetActive(false);
+        // gameplay.SetActive(false);
+        // startUI.SetActive(true);
        
-        // todo - sign up for notification about enemy death 
         Enemy.OnEnemyDied += OnEnemyDied;
         Player.OnPlayerDied += OnPlayerDied;
 
@@ -34,15 +34,15 @@ public class GameManager : MonoBehaviour
             scoreHigh = PlayerPrefs.GetInt("scoreHighStored");
 
         ScoreFormatter(PlayerPrefs.GetInt("scoreHighStored"), scoreHighText);
-        time = 0;
+        // time = 0;
 
     }
 
 
     void Update()
     {
-        if (time <= 3)
-            StartScreen();
+        // if (time <= 3)
+        //     StartScreen();
     }
 
 
@@ -60,20 +60,19 @@ public class GameManager : MonoBehaviour
     }
 
 
-    void StartScreen()
-    {
-        time += Time.deltaTime;
-        if (time >= 3 || Mouse.current.leftButton.wasPressedThisFrame)
-        {
-            startUI.SetActive(false);
-            gameplay.SetActive(true);
-        }
-    }
+    // void StartScreen()
+    // {
+    //     time += Time.deltaTime;
+    //     if (time >= 3 || Mouse.current.leftButton.wasPressedThisFrame)
+    //     {
+    //         startUI.SetActive(false);
+    //         gameplay.SetActive(true);
+    //     }
+    // }
 
 
     void OnPlayerDied()
     {
-        Debug.Log("running");
         if (scoreTotal > scoreHigh)
         {
             scoreHigh = scoreTotal;
@@ -82,14 +81,13 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.Save();
         }
 
-        Transform playerInstance = Instantiate(player).transform;
-        playerInstance.transform.position = new Vector2(0, -10.5f);
-        playerInstance.transform.parent = gameplay.transform;
+        // Transform playerInstance = Instantiate(player).transform;
+        // playerInstance.transform.position = new Vector2(0, -10.5f);
+        // playerInstance.transform.parent = gameplay.transform;
         
-        startUI.SetActive(true);
-        gameplay.SetActive(false);
-        
-        time = 0;
+        // startUI.SetActive(true);
+        // gameplay.SetActive(false);
+        // time = 0;
         scoreTotal = 0;
         ScoreFormatter(scoreTotal, scoreText);
     }

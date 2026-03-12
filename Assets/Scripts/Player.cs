@@ -1,23 +1,33 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class Player : MonoBehaviour
 {
     public GameObject bulletPrefab;
     public Transform shootOffsetTransform;
-    public AudioManager audioManager;
     public float speed = 5f;
 
     public delegate void PlayerDiedFunc();
     public static event PlayerDiedFunc OnPlayerDied;
+    public delegate void LoadCreditsFunc();
+    public static event LoadCreditsFunc OnLoadCredits;
+    public AudioManager audioManager;
+    Animator _animator;
+
     
 
+    void Start()
+    {
+        _animator = GetComponent<Animator>();
+    }
+    
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame && _animator.GetBool("Shoot") == false)
         {
-            GameObject shot = Instantiate(bulletPrefab, shootOffsetTransform.position, Quaternion.identity);
-            audioManager.PlayerShoot();
+            _animator.SetBool("Shoot", true);
+            GameObject shot = Instantiate(bulletPrefab, shootOffsetTransform.position, shootOffsetTransform.rotation);
             Destroy(shot, 4f);
         }
 
@@ -33,12 +43,33 @@ public class Player : MonoBehaviour
     {
         if(collision.gameObject.layer == LayerMask.NameToLayer("EnemyBullet"))
         {
+            _animator.SetBool("Died", true);
+
             Destroy(collision.gameObject);
-            Destroy(gameObject);
-
             Debug.Log("Game Over");
-
-            OnPlayerDied?.Invoke();
         }
     }
+
+    void StopShootAnim()
+    {
+        _animator.SetBool("Shoot", false);
+    }
+
+    void StopExplodeAnim()
+    {
+        // Destroy(gameObject);
+        OnPlayerDied?.Invoke();
+        OnLoadCredits?.Invoke();
+    }
+
+    void StartShootSound()
+    {
+        audioManager.PlayerShootSound();
+    }
+
+    void StartExplodeSound()
+    {
+        audioManager.PlayerExplodeSound();
+    }
+
 }
